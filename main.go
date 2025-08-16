@@ -164,4 +164,33 @@ func main() {
 	}
 
 	fmt.Println("Factorial of 5 is:", factorial(5)) // calling the recursive function
+
+	// ##########
+	// Pointers
+
+	x := 10                                                            // declaring an integer variable
+	y := &x                                                            // y is a pointer to x, it holds the memory address of x
+	fmt.Println("Value of x:", x)                                      // prints the value of x
+	fmt.Println("Address of x:", &x)                                   // prints the memory address of x
+	fmt.Println("Value of y (pointer to x):", *y)                      // dereferencing y to get the value of x
+	*y = 20                                                            // changing the value of x through the pointer y
+	fmt.Println("New value of x after changing through pointer y:", x) // prints the new value of x
+
+	// ####################
+	// Structs and methods
+
+	// #######
+	// Enums
+
+	// ###############
+	// Error handling
+
+	// #############
+	// Interfaces
+
+	// ###########################
+	// Concurrency and Goroutines
+
+	// #########
+	// Channels
 }
