@@ -6,10 +6,23 @@ func greet(name string) { // function that takes a string and prints a greeting
 	fmt.Println("Hello,", name) // calling the function
 }
 
+func add2(a, b int) int { // function that takes two integers and returns their sum
+	return a + b // returns the sum of a and b
+}
+
+// Regular function returning an anonymous function
+func funception() func(i, j string) string {
+	myf := func(i, j string) string {
+		return i + j + "!"
+	}
+	return myf
+}
+
 func main() {
 	fmt.Println("Hello, world! 👋")
 
-	// variables
+	// ###########
+	// Variables
 
 	var name string = "Alice" // declaring a variable with type string, swap var for cosnt to define an immutable
 	surname := "Smith"        // shorthand declaration, type inferred
@@ -18,7 +31,8 @@ func main() {
 	age := 30
 	fmt.Printf("Name: %s, Surname: %s, Age: %d\n", name, surname, age) // formatted output using Printf
 
-	// flow control
+	// #############
+	// Flow control
 
 	//if else
 	if age < 18 {
@@ -55,7 +69,8 @@ func main() {
 	whatAmI(1)
 	whatAmI("hey")
 
-	// loops
+	// #######
+	// Loops
 
 	//for loop
 	for i := range 5 { //same as for i := 0; i < 5; i++ {
@@ -76,7 +91,9 @@ func main() {
 		break
 	}
 
-	// Arrays and Slices
+	// ##################
+	// Arrays etc.
+
 	arr := [5]int{1, 2, 3, 4, 5} // fixed-size array
 	fmt.Println("Array:", arr)
 
@@ -101,14 +118,18 @@ func main() {
 	fmt.Println("Map after adding Charlie:", myMap)
 	fmt.Println("Value for Alice:", myMap["Alice"]) // accessing a value by key
 
-	//functions
+	// #########
+	// Functions
 
-	// closures are defined outside of main as functions that capture variables from their surrounding context
+	// named functions are defined outside of main as functions that capture variables from their surrounding context
 	greet(name) // calling the greet function with a string argument
 
-	// anonymous function - these can be used for callbacks or immediate execution
+	// anonymous functions with no name - these can be used for callbacks or immediate execution, the function is assigned to a variable
 	add := func(a, b int) int { // name the function, takes two integers, retruns an integer
 		return a + b
 	}
-	fmt.Println("Sum of 5 and 3 is:", add(5, 3)) // calling the function
+	fmt.Println("Sum of 5 and 3 is:", add(5, 3))
+	fmt.Println("Sum of 5 and 3 is:", add2(5, 3))
+
+	fmt.Println("Funception result:", funception()("Hello", "World")) // calling the funception function, which returns an anonymous function and then calling that function with arguments
 }
