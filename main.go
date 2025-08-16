@@ -18,6 +18,17 @@ func funception() func(i, j string) string {
 	return myf
 }
 
+// Variadic function that takes a variable number of integers and prints them along with their sum
+func sum(nums ...int) {
+	fmt.Print(nums, " ")
+	total := 0
+
+	for _, num := range nums {
+		total += num
+	}
+	fmt.Println(total)
+}
+
 func main() {
 	fmt.Println("Hello, world! 👋")
 
@@ -132,4 +143,8 @@ func main() {
 	fmt.Println("Sum of 5 and 3 is:", add2(5, 3))
 
 	fmt.Println("Funception result:", funception()("Hello", "World")) // calling the funception function, which returns an anonymous function and then calling that function with arguments
+
+	// Variadic function call
+	sum(1, 2, 3, 4, 5) // can have any number of arguments
+	sum(1, 2, 3)       // calling the sum function with a variable number of arguments
 }
