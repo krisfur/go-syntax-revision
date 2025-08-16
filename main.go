@@ -60,9 +60,11 @@ func main() {
 		fmt.Println("You are a toddler.")
 	case 6, 7, 8, 9, 10, 11, 12: // another group
 		fmt.Println("You are a child.")
-	default: // default case if no other case matches
+	default: // default case if no other case matches - optional
 		fmt.Println("You are a teenager or older.")
 	}
+
+	// there's no need in Go for a branchless programming approach, the compiler already avoids jumps and implements cmove for you
 
 	// switch with type assertion
 	// This is a way to check the type of a variable at runtime
@@ -147,4 +149,19 @@ func main() {
 	// Variadic function call
 	sum(1, 2, 3, 4, 5) // can have any number of arguments
 	sum(1, 2, 3)       // calling the sum function with a variable number of arguments
+
+	//recursion
+	// you can use recursion in defined functions outside of main, or in anonymous functions
+
+	// to do it in anonymous functions, you need to declare the function variable first, then assign it a function that refers to itself
+	var factorial func(n int) int // declaring a variable of type function that takes an int and returns an int
+
+	factorial = func(n int) int {
+		if n == 0 {
+			return 1 // base case
+		}
+		return n * factorial(n-1) // recursive case
+	}
+
+	fmt.Println("Factorial of 5 is:", factorial(5)) // calling the recursive function
 }
