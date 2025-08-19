@@ -1,6 +1,10 @@
 package main
 
-import "fmt" //format library for printing
+import (
+	"bufio"
+	"fmt" //format library for printing
+	"os"  //os library for operating system functionality
+)
 
 func greet(name string) { // function that takes a string and prints a greeting
 	fmt.Println("Hello,", name) // calling the function
@@ -165,6 +169,51 @@ func main() {
 
 	fmt.Println("Factorial of 5 is:", factorial(5)) // calling the recursive function
 
+	// #################
+	// defer statements
+	printFile := func(filename string) { // anonymous function to read and print a file
+		f, err := os.Open(filename)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return
+		}
+		fmt.Println("File opened successfully:", filename)
+		fmt.Println("--- File Content ---")
+
+		// create a new scanner for the file
+		scanner := bufio.NewScanner(f)
+
+		// loop through each line of the file and print it
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+
+		// check for any errors that occurred during scanning
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error reading file:", err)
+		}
+		fmt.Println("--- End of File ---")
+	}
+
+	printFile("example.txt") // calling the function to read and print a file
+
+	// ###############
+	// Error handling
+
+	// Go uses multiple return values to handle errors, typically returning a value and an error
+	divide := func(a, b int) (int, error) {
+		if b == 0 {
+			return 0, fmt.Errorf("division by zero") // returning an error if b is zero
+		}
+		return a / b, nil // returning the result and nil for no error
+	}
+	result, err := divide(10, 0) // calling the divide function
+	if err != nil {
+		fmt.Println("Error:", err) // printing the error if it exists
+	} else {
+		fmt.Println("Result of division:", result) // printing the result if no error
+	}
+
 	// ##########
 	// Pointers
 
@@ -181,9 +230,6 @@ func main() {
 
 	// #######
 	// Enums
-
-	// ###############
-	// Error handling
 
 	// #############
 	// Interfaces
