@@ -170,13 +170,16 @@ func main() {
 	fmt.Println("Factorial of 5 is:", factorial(5)) // calling the recursive function
 
 	// #################
-	// defer statements
+	// Defer
+
+	// Defer is used to ensure that a function call is performed later in the program's or function's execution, usually for cleanup purposes
 	printFile := func(filename string) { // anonymous function to read and print a file
 		f, err := os.Open(filename)
 		if err != nil {
 			fmt.Println("Error opening file:", err)
 			return
 		}
+		defer f.Close() // defer ensures the file is closed after the function completes
 		fmt.Println("File opened successfully:", filename)
 		fmt.Println("--- File Content ---")
 
