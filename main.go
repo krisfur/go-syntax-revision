@@ -2,8 +2,9 @@ package main
 
 import (
 	"bufio"
-	"fmt" //format library for printing
-	"os"  //os library for operating system functionality
+	"fmt"  //format library for printing
+	"os"   //os library for operating system functionality
+	"sync" //sync library for synchronisation primitives like WaitGroup
 )
 
 func greet(name string) { // function that takes a string and prints a greeting
@@ -229,17 +230,206 @@ func main() {
 	fmt.Println("New value of x after changing through pointer y:", x) // prints the new value of x
 
 	// ####################
-	// Structs and methods
+	// Structs
+
+	type Person struct {
+		name string
+		age  int
+	}
+
+	p := Person{name: "Alice", age: 30}
+	fmt.Println("Person:", p.name, "Age:", p.age)
 
 	// #######
 	// Enums
 
+	const (
+		Red   = 0
+		Green = 1
+		Blue  = 2
+	)
+
+	color := Red
+	fmt.Println("Color code:", color)
+
 	// #############
 	// Interfaces
+
+	// interface definition
+	type Writer interface {
+		WriteString() string
+	}
+
+	// interface value can hold any type that implements the interface
+	write := func(s string) string {
+		return "Written: " + s
+	}
+	fmt.Println(write("Hello"))
+
+	// #########
+	// Channels
+
+	// Channels are the primary way goroutines communicate with each other
+	// Think of them as pipes through which goroutines send and receive data
+	// They're type-safe, synchronized, and prevent race conditions
+
+	fmt.Println("\n--- Basic Channel Communication ---")
+	// Create an unbuffered channel (sender blocks until receiver is ready)
+	messages := make(chan string)
+
+	// Goroutine sends a message
+	go func() {
+		messages <- "Hello from goroutine"
+	}()
+
+	// Main receives the message
+	msg := <-messages
+	fmt.Println("Received:", msg)
+
+	// Buffered channels - sender only blocks when buffer is full
+	fmt.Println("\n--- Buffered Channel Example ---")
+	buffered := make(chan int, 2) // can hold 2 values without blocking
+	buffered <- 1
+	buffered <- 2
+	fmt.Println("First:", <-buffered)  // receives 1
+	fmt.Println("Second:", <-buffered) // receives 2
+
+	// Channel directions - send-only, receive-only
+	fmt.Println("\n--- Channel Directions ---")
+	sendOnly := func(ch chan<- int) { // send-only channel
+		ch <- 42
+	}
+	receiveOnly := func(ch <-chan int) { // receive-only channel
+		fmt.Println("Received:", <-ch)
+	}
+
+	ch := make(chan int)
+	go sendOnly(ch)
+	receiveOnly(ch)
+
+	// Closing channels - signal that no more values will be sent
+	fmt.Println("\n--- Closing Channels ---")
+	done := make(chan bool)
+	go func() {
+		for range 3 {
+			done <- true
+		}
+		close(done) // close the channel to signal completion
+	}()
+
+	// Receive values until channel is closed
+	for v := range done {
+		fmt.Println("Got value:", v)
+	}
+	fmt.Println("Channel closed and drained")
+
+	// Selecting on multiple channels - choose which channel to read from
+	fmt.Println("\n--- Select Statement ---")
+	ch1 := make(chan string)
+	ch2 := make(chan string)
+
+	go func() {
+		ch1 <- "From channel 1"
+	}()
+	go func() {
+		ch2 <- "From channel 2"
+	}()
+
+	// Select waits on the first channel that has data ready
+	select {
+	case msg1 := <-ch1:
+		fmt.Println(msg1)
+	case msg2 := <-ch2:
+		fmt.Println(msg2)
+	}
 
 	// ###########################
 	// Concurrency and Goroutines
 
-	// #########
-	// Channels
+	// Goroutines are lightweight threads managed by the Go runtime
+	// They allow you to run multiple functions concurrently
+	// Much cheaper than OS threads - you can have thousands of them
+
+	// Example 1: Simple goroutine syntax
+	go func() {
+		fmt.Println("Running in a goroutine")
+	}()
+
+	// Example 2: Fan-out pattern - spawn goroutines as fast as you can
+	// Great for CPU-bound work or when you have unlimited workers available
+	fmt.Println("\n--- Fan-out Example (No Limit) ---")
+	numJobs := 10
+	jobResults := make(chan string, numJobs) // buffered channel to collect results
+
+	// Spawn a goroutine for each job without any limit
+	for i := range numJobs {
+		go func(jobID int) {
+			// Simulate some work
+			fmt.Printf("Job %d started\n", jobID)
+			jobResults <- fmt.Sprintf("Job %d completed", jobID)
+		}(i)
+	}
+
+	// Collect all results
+	for range numJobs {
+		fmt.Println(<-jobResults)
+	}
+
+	// Example 3: Worker pool pattern - limit concurrent goroutines
+	// Use a buffered channel as a semaphore to limit the number of workers
+	// Great for I/O-bound work where you want to control resource usage
+	fmt.Println("\n--- Worker Pool Example (Limited Workers) ---")
+	numJobs2 := 20
+	maxWorkers := 3
+	jobQueue := make(chan int, numJobs2)
+	results := make(chan string, numJobs2)
+
+	// Create a limited pool of workers
+	for w := range maxWorkers {
+		go func(workerID int) {
+			// Each worker processes jobs from the queue until it's closed
+			for jobID := range jobQueue {
+				fmt.Printf("Worker %d processing job %d\n", workerID, jobID)
+				results <- fmt.Sprintf("Worker %d completed job %d", workerID, jobID)
+			}
+		}(w)
+	}
+
+	// Send jobs to the queue
+	for j := range numJobs2 {
+		jobQueue <- j
+	}
+	close(jobQueue) // signal workers that no more jobs are coming
+
+	// Collect results
+	for range numJobs2 {
+		fmt.Println(<-results)
+	}
+
+	// Example 4: WaitGroup for synchronization
+	// Use sync.WaitGroup when you need to wait for all goroutines to complete
+	fmt.Println("\n--- WaitGroup Example ---")
+	var wg sync.WaitGroup
+	numGoroutines := 5
+
+	for id := range numGoroutines {
+		wg.Add(1) // increment the wait counter
+		go func(id int) {
+			defer wg.Done() // decrement when goroutine completes
+			fmt.Printf("Goroutine %d is running\n", id)
+		}(id)
+	}
+
+	wg.Wait() // wait for all goroutines to complete
+	fmt.Println("All goroutines completed")
+
+	// #########################
+	// Importing functions from other .go files
+
+	// Call functions defined in helper.go (same package, same directory)
+	product := Multiply(6, 7) // calling Multiply from helper.go
+	fmt.Println("6 * 7 =", product)
+
+	greeting := Greet("Gopher") // calling Greet from helper.go
+	fmt.Println(greeting)
 }

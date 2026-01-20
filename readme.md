@@ -41,6 +41,8 @@ go run .
 go build .
 ```
 
+> Go uses your directory in its build system, all `.go` files with `package main` at the top will be pulled in and imported, don't have to have specific import statements for other local files -> the file system is the build system, in a way.
+
 ## Adding libraries
 
 1. Add whatever you need in your import statement in `main.go` (can be names or github link):
