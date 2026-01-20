@@ -7,6 +7,24 @@ import (
 	"sync" //sync library for synchronisation primitives like WaitGroup
 )
 
+// Generic function that returns the maximum of two values, int or float
+func Max[T int | float64](a, b T) T {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// Generic function that works with any type that supports comparison
+func isEqual[T comparable](a, b T) bool {
+	return a == b
+}
+
+// Generic type that holds any value
+type Box[T any] struct {
+	value T
+}
+
 func greet(name string) { // function that takes a string and prints a greeting
 	fmt.Println("Hello,", name) // calling the function
 }
@@ -40,12 +58,12 @@ func main() {
 	// ###########
 	// Variables
 
-	var name string = "Alice" // declaring a variable with type string, swap var for cosnt to define an immutable
+	var name string = "Alice" // declaring a variable with type string, swap var for const to define an immutable
 	surname := "Smith"        // shorthand declaration, type inferred
 
 	fmt.Println("Name:", name+",", "Surname:", surname) // comma separation adds a space, to append a comma after a name we just + it since they're strings
 	age := 30
-	fmt.Printf("Name: %s, Surname: %s, Age: %d\n", name, surname, age) // formatted output using Printf
+	fmt.Printf("Name: %s, Surname: %s, Age: %d\n", name, surname, age) // formatted output using Printf, note we need to add a new line at the end
 
 	// #############
 	// Flow control
@@ -139,11 +157,11 @@ func main() {
 	// #########
 	// Functions
 
-	// named functions are defined outside of main as functions that capture variables from their surrounding context
+	// named functions are defined [outside of main] as functions that capture variables from their surrounding context - see top of file
 	greet(name) // calling the greet function with a string argument
 
 	// anonymous functions with no name - these can be used for callbacks or immediate execution, the function is assigned to a variable
-	add := func(a, b int) int { // name the function, takes two integers, retruns an integer
+	add := func(a, b int) int { // takes two integers, retruns an integer
 		return a + b
 	}
 	fmt.Println("Sum of 5 and 3 is:", add(5, 3))
@@ -171,9 +189,27 @@ func main() {
 	fmt.Println("Factorial of 5 is:", factorial(5)) // calling the recursive function
 
 	// #################
+	// Generics
+
+	// Generics allow you to write functions and types that work with any type
+	// They use square brackets [T] where T is a type parameter - C++ templates, but more chill
+	// [Defined at the top of the file]
+
+	fmt.Println("Are 5 and 5 equal?", isEqual(5, 5))                         // works with integers
+	fmt.Println("Are 'hello' and 'hello' equal?", isEqual("hello", "hello")) // works with strings
+	fmt.Println("Are 3.14 and 2.71 equal?", isEqual(3.14, 2.71))             // works with floats
+
+	// Generic type that holds any value
+	intBox := Box[int]{value: 42}
+	strBox := Box[string]{value: "Hello, Generics!"}
+
+	fmt.Println("Int box:", intBox.value)
+	fmt.Println("String box:", strBox.value)
+
+	// #################
 	// Defer
 
-	// Defer is used to ensure that a function call is performed later in the program's or function's execution, usually for cleanup purposes
+	// Defer is used to ensure that a function call is performed at the end of the scope, usually for cleanup purposes
 	printFile := func(filename string) { // anonymous function to read and print a file
 		f, err := os.Open(filename)
 		if err != nil {
@@ -225,6 +261,7 @@ func main() {
 	y := &x                                                            // y is a pointer to x, it holds the memory address of x
 	fmt.Println("Value of x:", x)                                      // prints the value of x
 	fmt.Println("Address of x:", &x)                                   // prints the memory address of x
+	fmt.Println("Address of x:", y)                                    //  alsoprints the memory address of x
 	fmt.Println("Value of y (pointer to x):", *y)                      // dereferencing y to get the value of x
 	*y = 20                                                            // changing the value of x through the pointer y
 	fmt.Println("New value of x after changing through pointer y:", x) // prints the new value of x
