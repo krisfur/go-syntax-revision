@@ -266,6 +266,21 @@ func main() {
 	*y = 20                                                            // changing the value of x through the pointer y
 	fmt.Println("New value of x after changing through pointer y:", x) // prints the new value of x
 
+	// Passing by reference
+	type Player struct {
+		health int
+		name   string
+	}
+
+	var p1 Player = Player{65, "Johnny"} //instance of a complicated object we don't want to copy around
+
+	heal := func(pPlayer *Player, amount int) { //*Player is pointer to something og type Player
+		pPlayer.health += amount //dereferencing is implicit, handled by the language
+		fmt.Printf("Healed %s for %d HP, their new health amount is %d\n", pPlayer.name, amount, pPlayer.health)
+	}
+
+	heal(&p1, 4)
+
 	// ####################
 	// Structs
 
