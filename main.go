@@ -479,6 +479,7 @@ func main() {
 	// Importing functions from other .go files
 
 	// Call functions defined in helper.go (same package, same directory)
+	// Note: we do not explicitly import the other file! if it has package main at the top it is automatically treated as part of the same program, as if you inserted it in with #include in C
 	product := Multiply(6, 7) // calling Multiply from helper.go
 	fmt.Println("6 * 7 =", product)
 
