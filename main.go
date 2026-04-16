@@ -25,6 +25,28 @@ type Box[T any] struct {
 	value T
 }
 
+// interfaces
+type Speaker interface {
+	Speak() string
+}
+
+type CasualSpeaker struct {
+	name string
+}
+
+type FormalSpeaker struct {
+	surname string
+}
+
+// functions for interfaces
+func (c CasualSpeaker) Speak() string {
+	return "Hi " + c.name
+}
+
+func (f FormalSpeaker) Speak() string {
+	return "Good day, Mr./Ms. " + f.surname
+}
+
 func greet(name string) { // function that takes a string and prints a greeting
 	fmt.Println("Hello,", name) // calling the function
 }
@@ -307,16 +329,15 @@ func main() {
 	// #############
 	// Interfaces
 
-	// interface definition
-	type Writer interface {
-		WriteString() string
+	// In Go, interfaces describe behavior, not data.
+	// If you're used to interfaces feeling a bit like "this type has these things on it",
+	// Go interfaces are almost the opposite: they let you swap implementations later without changing the calling code.
+	sayHello := func(s Speaker) {
+		fmt.Println(s.Speak())
 	}
 
-	// interface value can hold any type that implements the interface
-	write := func(s string) string {
-		return "Written: " + s
-	}
-	fmt.Println(write("Hello"))
+	sayHello(CasualSpeaker{name: name})
+	sayHello(FormalSpeaker{surname: surname})
 
 	// #########
 	// Channels
